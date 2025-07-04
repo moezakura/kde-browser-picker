@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsDialog</class>
+ <widget class="QDialog" name="SettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>設定</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="generalTab">
+      <attribute name="title">
+       <string>一般</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="generalLayout">
+       <item>
+        <widget class="QGroupBox" name="timeoutGroup">
+         <property name="title">
+          <string>自動選択タイムアウト</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="timeoutLabel">
+            <property name="text">
+             <string>タイムアウト時間:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSlider" name="timeoutSlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>60</number>
+            </property>
+            <property name="pageStep">
+             <number>5</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+            <property name="tickInterval">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QSpinBox" name="timeoutSpinBox">
+            <property name="suffix">
+             <string> 秒</string>
+            </property>
+            <property name="maximum">
+             <number>60</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="2">
+           <widget class="QLabel" name="timeoutHelpLabel">
+            <property name="text">
+             <string>0に設定すると自動選択を無効にします</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: palette(mid);</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="rememberLastCheckBox">
+         <property name="text">
+          <string>最後に使用したプロファイルを記憶する</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="showTrayCheckBox">
+         <property name="text">
+          <string>システムトレイアイコンを表示する</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="defaultBrowserGroup">
+         <property name="title">
+          <string>デフォルトブラウザ</string>
+         </property>
+         <layout class="QVBoxLayout" name="defaultBrowserLayout">
+          <item>
+           <widget class="QLabel" name="defaultBrowserStatusLabel">
+            <property name="text">
+             <string>現在のステータス: 未設定</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="registerDefaultButton">
+            <property name="text">
+             <string>デフォルトブラウザとして登録</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="generalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="profilesTab">
+      <attribute name="title">
+       <string>プロファイル</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>timeoutSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>timeoutSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>250</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>80</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>timeoutSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>timeoutSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>400</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>250</x>
+     <y>80</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
