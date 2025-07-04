@@ -1,0 +1,17 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=KDE Browser Picker
+Name[ja]=KDE ブラウザピッカー
+GenericName=Browser Profile Selector
+GenericName[ja]=ブラウザプロファイルセレクタ
+Comment=Select browser and profile for opening links
+Comment[ja]=リンクを開くためのブラウザとプロファイルを選択
+Exec=kde-browser-picker %u
+Icon=web-browser
+Terminal=false
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/xhtml_xml;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;
+StartupNotify=true
+X-KDE-SubstituteUID=false
+X-KDE-HasTrayIcon=true
