@@ -39,6 +39,8 @@ TEST_F(BrowserDetectorSecurityTest, ValidUrls)
     EXPECT_TRUE(BrowserDetector::isValidUrl("http://example.com"));
     EXPECT_TRUE(BrowserDetector::isValidUrl("https://example.com/path/to/page"));
     EXPECT_TRUE(BrowserDetector::isValidUrl("https://example.com?query=value"));
+    EXPECT_TRUE(BrowserDetector::isValidUrl("https://example.com?param1=value1&param2=value2"));
+    EXPECT_TRUE(BrowserDetector::isValidUrl("https://example.com/search?q=test&lang=ja&page=1"));
     EXPECT_TRUE(BrowserDetector::isValidUrl("file:///home/user/document.html"));
     EXPECT_TRUE(BrowserDetector::isValidUrl("about:blank"));
     EXPECT_TRUE(BrowserDetector::isValidUrl("chrome://settings"));

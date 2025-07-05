@@ -109,14 +109,14 @@ bool BrowserDetector::isValidUrl(const QString& url)
         QString scheme = qurl.scheme().toLower();
         if (scheme.isEmpty() || allowedSchemes.contains(scheme)) {
             // インジェクション攻撃に使用される可能性のある危険な文字をチェック
-            static QRegularExpression dangerousChars(R"([;&|`$\(\)\{\}\[\]<>])");
+            static QRegularExpression dangerousChars(R"([;|`$\(\)\{\}\[\]<>])");
             return !dangerousChars.match(url).hasMatch();
         }
     }
     
     // スキームのないURLも許可（https://がプレフィックスされる）
     if (!url.contains("://")) {
-        static QRegularExpression dangerousChars(R"([;&|`$\(\)\{\}\[\]<>])");
+        static QRegularExpression dangerousChars(R"([;|`$\(\)\{\}\[\]<>])");
         return !dangerousChars.match(url).hasMatch();
     }
     
