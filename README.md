@@ -86,7 +86,7 @@ kde-browser-picker https://example.com
 
 ## ライセンス
 
-GPL v3
+MIT
 
 ## 貢献
 
