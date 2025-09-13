@@ -53,9 +53,9 @@ mkdir -p AppDir/usr/share/metainfo
 cat > AppDir/usr/share/metainfo/${APP_NAME}.appdata.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id>org.kde.${APP_NAME}</id>
+  <id>io.github.moezakura.${APP_NAME}</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>GPL-3.0+</project_license>
+  <project_license>MIT</project_license>
   <name>KDE Browser Picker</name>
   <summary>Select browser and profile for opening links</summary>
   <description>
@@ -73,8 +73,8 @@ cat > AppDir/usr/share/metainfo/${APP_NAME}.appdata.xml << EOF
       <caption>Main window</caption>
     </screenshot>
   </screenshots>
-  <url type="homepage">https://github.com/yourusername/kde-browser-picker</url>
-  <url type="bugtracker">https://github.com/yourusername/kde-browser-picker/issues</url>
+  <url type="homepage">https://github.com/moezakura/kde-browser-picker</url>
+  <url type="bugtracker">https://github.com/moezakura/kde-browser-picker/issues</url>
   <releases>
     <release version="${APP_VERSION}" date="2025-07-04">
       <description>
@@ -102,7 +102,7 @@ fi
 # Create AppImage
 echo -e "${YELLOW}Creating AppImage...${NC}"
 export LDAI_OUTPUT="${APP_NAME}-${APP_VERSION}-${ARCH}.AppImage"
-export LDAI_UPDATE_INFORMATION="gh-releases-zsync|yourusername|kde-browser-picker|latest|${APP_NAME}-*-${ARCH}.AppImage.zsync"
+export LDAI_UPDATE_INFORMATION="gh-releases-zsync|moezakura|kde-browser-picker|latest|${APP_NAME}-*-${ARCH}.AppImage.zsync"
 
 ../linuxdeploy-${ARCH}.AppImage \
     --appdir AppDir \

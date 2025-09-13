@@ -31,12 +31,13 @@ int main(int argc, char *argv[])
                         i18n("KDE Browser Picker"),
                         KDE_BROWSER_PICKER_VERSION_STRING,
                         i18n("Select browser and profile for opening links"),
-                        KAboutLicense::GPL_V3,
+                        KAboutLicense::Custom,
                         i18n("(c) 2025"),
                         QString(),
-                        "https://github.com/yourusername/kde-browser-picker");
-                        
-    aboutData.addAuthor(i18n("Your Name"), i18n("Developer"), "your.email@example.com");
+                        "https://github.com/moezakura/kde-browser-picker");
+
+    aboutData.addAuthor(i18n("moezakura"), i18n("Developer"), QString());
+    aboutData.addLicenseText(i18n("MIT License"));
     
     KAboutData::setApplicationData(aboutData);
     

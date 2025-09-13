@@ -23,7 +23,7 @@ sudo pacman -S base-devel cmake qt6-base qt6-tools \
 ### ビルド手順
 ```bash
 # リポジトリをクローン
-git clone https://github.com/yourusername/kde-browser-picker.git
+git clone https://github.com/moezakura/kde-browser-picker.git
 cd kde-browser-picker
 
 # ビルドディレクトリを作成
@@ -132,9 +132,9 @@ kde-browser-picker --init-defaults --force
 ## 技術仕様
 
 - **言語**: C++20
-- **GUIフレームワーク**: Qt6 (6.5+)
-- **KDE統合**: KDE Frameworks 6
-- **ビルドシステム**: CMake 3.25+
+- **GUIフレームワーク**: Qt5
+- **KDE統合**: KDE Frameworks 5
+- **ビルドシステム**: CMake 3.16+
 
 ## ライセンス
 
@@ -146,4 +146,4 @@ MIT
 
 ## バグ報告
 
-バグを見つけた場合は、[GitHub Issues](https://github.com/yourusername/kde-browser-picker/issues)で報告してください。
+バグを見つけた場合は、[GitHub Issues](https://github.com/moezakura/kde-browser-picker/issues)で報告してください。
