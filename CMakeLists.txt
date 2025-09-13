@@ -28,12 +28,23 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
-# 依存パッケージの検索
-# Find Qt5 packages
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
+# 依存パッケージの検索（Qt6/KF6 を優先し、なければ Qt5/KF5）
+# Prefer Qt6; fallback to Qt5
+set(QT_PACKAGE "")
+set(KF_PACKAGE "")
 
-# Find KF5 packages
-find_package(KF5 REQUIRED COMPONENTS Config ConfigWidgets Notifications I18n)
+# Prefer Qt5/KF5 on this machine; try Qt6/KF6 only if Qt5 is unavailable
+find_package(Qt5 COMPONENTS Core Widgets Gui QUIET)
+if (Qt5_FOUND)
+    find_package(KF5 REQUIRED COMPONENTS Config ConfigWidgets Notifications I18n)
+    set(QT_PACKAGE Qt5)
+    set(KF_PACKAGE KF5)
+else()
+    find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
+    find_package(KF6 REQUIRED COMPONENTS Config ConfigWidgets Notifications I18n)
+    set(QT_PACKAGE Qt6)
+    set(KF_PACKAGE KF6)
+endif()
 
 # Enable automatic MOC, UIC, and RCC
 set(CMAKE_AUTOMOC ON)
@@ -101,13 +112,13 @@ add_executable(kde-browser-picker
 # ライブラリのリンク
 # Link libraries
 target_link_libraries(kde-browser-picker
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Gui
-    KF5::ConfigCore
-    KF5::ConfigWidgets
-    KF5::Notifications
-    KF5::I18n
+    ${QT_PACKAGE}::Core
+    ${QT_PACKAGE}::Widgets
+    ${QT_PACKAGE}::Gui
+    ${KF_PACKAGE}::ConfigCore
+    ${KF_PACKAGE}::ConfigWidgets
+    ${KF_PACKAGE}::Notifications
+    ${KF_PACKAGE}::I18n
 )
 
 # コンパイラオプションの設定

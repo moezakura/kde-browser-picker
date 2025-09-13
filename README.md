@@ -15,8 +15,8 @@ KDE環境でリンクを開く際に、ブラウザとプロファイルを選�
 
 ### ArchLinux
 ```bash
-sudo pacman -S base-devel cmake qt6-base qt6-tools \
-               extra-cmake-modules kf6-kconfig kf6-knotifications kf6-ki18n \
+sudo pacman -S base-devel cmake qt5-base qt5-tools \
+               extra-cmake-modules kconfig kconfigwidgets knotifications ki18n \
                gcc
 ```
 
