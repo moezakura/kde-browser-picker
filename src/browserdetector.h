@@ -141,6 +141,18 @@ public:
      */
     static QString sanitizeProfileName(const QString& profileName);
 
+    /**
+     * @brief 実行ファイルパスの上書きマップを設定（YAMLなどから）
+     * @param overrides browserId -> executable パス
+     */
+    void setExecutableOverrides(const QMap<QString, QString>& overrides) { m_execOverrides = overrides; }
+
+    /**
+     * @brief 有効/無効の上書きマップを設定（YAMLなどから）
+     * @param overrides browserId -> enabled
+     */
+    void setEnabledOverrides(const QMap<QString, bool>& overrides) { m_enabledOverrides = overrides; }
+
 signals:
     /**
      * @brief ブラウザが検出されたときに発行されるシグナル
@@ -231,6 +243,8 @@ private:
     // 検出結果のキャッシュ
     mutable QMap<QString, BrowserInfo> m_cachedBrowsers;  ///< 検出されたブラウザ情報のキャッシュ
     mutable QDateTime m_lastDetection;                    ///< 最後に検出を実行した日時
+    QMap<QString, QString> m_execOverrides;               ///< 実行ファイルパスの上書き
+    QMap<QString, bool> m_enabledOverrides;               ///< 有効/無効の上書き
 };
 
 #endif // BROWSERDETECTOR_H

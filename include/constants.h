@@ -105,6 +105,15 @@ namespace Constants {
         Disabled,
         NotFound
     };
+
+    /**
+     * @brief YAML設定
+     * YAMLによるブラウザ起動コマンドの上書き設定
+     */
+    // YAML config
+    constexpr auto YAML_CONFIG_FILENAME_YAML = "kde-browser-picker.yaml";
+    constexpr auto YAML_CONFIG_FILENAME_YML = "kde-browser-picker.yml";
+    constexpr auto YAML_ENV_PATH = "KDE_BROWSER_PICKER_YAML"; // テスト・上級者向け: 明示パス指定
 }
 
 #endif // KDE_BROWSER_PICKER_CONSTANTS_H

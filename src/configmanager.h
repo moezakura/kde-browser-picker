@@ -13,6 +13,7 @@
 #include <QString>
 #include <QPair>
 #include <memory>
+#include <QMap>
 
 // Forward declarations
 class KConfig;
@@ -171,6 +172,39 @@ public:
      * @return true: 存在する, false: 存在しない
      */
     bool hasKey(const QString& group, const QString& key) const;
+
+    // YAML overrides
+    /**
+     * @brief YAMLで指定されたブラウザ実行パスの上書きマップを取得
+     * @return browserId -> executable パス
+     */
+    QMap<QString, QString> browserExecutableOverrides() const;
+
+    /**
+     * @brief 特定ブラウザの実行パス上書きを取得
+     * @param browser ブラウザID ("firefox", "chrome", "chromium")
+     * @return 上書きパス（なければ空）
+     */
+    QString browserExecutableOverride(const QString& browser) const;
+
+    /**
+     * @brief YAMLで指定されたブラウザ有効/無効の上書きマップを取得
+     * @return browserId -> enabled
+     */
+    QMap<QString, bool> browserEnabledOverrides() const;
+
+    /**
+     * @brief 特定ブラウザの有効/無効上書きを取得（未設定時はtrue）
+     */
+    bool isBrowserEnabledOverride(const QString& browser) const;
+
+    /**
+     * @brief デフォルト設定ファイルを展開（生成）
+     * ~/.config/kde-browser-pickerrc に初期値を書き、
+     * YAMLテンプレート(~/.config/kde-browser-picker.yaml)を未作成なら作成
+     * @return true: 何らかの生成/更新を行った, false: 何もせず
+     */
+    bool deployDefaults(bool overwriteYaml = false);
     
 signals:
     /**
@@ -221,6 +255,12 @@ private:
      * @brief 古い形式の設定ファイルを新しい形式に移行
      */
     void migrateOldConfig();
+
+    // YAML設定の読み込み
+    void loadYamlOverrides();
+
+    QMap<QString, QString> m_browserExecOverrides; ///< YAML上書き
+    QMap<QString, bool> m_browserEnabledOverrides; ///< YAML有効/無効上書き
 };
 
 #endif // CONFIGMANAGER_H

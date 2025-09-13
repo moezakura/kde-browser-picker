@@ -69,6 +69,58 @@ kde-browser-picker https://example.com
 
 設定は `~/.config/kde-browser-pickerrc` に保存されます。
 
+また、ブラウザ起動コマンド（実行パス）を YAML で上書きできます。
+
+YAML ファイルパス:
+
+- `~/.config/kde-browser-picker.yaml` または `~/.config/kde-browser-picker.yml`
+- 上級者・テスト用途向けに環境変数 `KDE_BROWSER_PICKER_YAML` で明示パス指定も可能
+
+サポートされるキーと例:
+
+```
+browsers:
+  firefox:
+    path: /opt/firefox/firefox
+    enabled: true
+  chrome:
+    path: /usr/bin/google-chrome-stable
+    enabled: false
+  chromium:
+    path: /usr/local/bin/chromium
+    enabled: true
+```
+
+もしくはネスト形式:
+
+```
+browsers:
+  firefox:
+    path: /opt/firefox/firefox
+    enabled: true
+```
+
+注意:
+
+- ここで指定できるのは「実行ファイルのパス」のみです。引数はアプリが安全に付与します。
+- 指定したパスは実在し、実行可能である必要があります。
+- `enabled` はそのブラウザ自体の有効/無効を切り替えます（未指定は有効）。
+
+デフォルト設定の展開
+
+- 初期設定ファイルと YAML テンプレートを `~/.config` に展開するには、以下を実行します。
+
+```
+kde-browser-picker --init-defaults
+```
+
+- 既に設定がある場合は何もしません（上書きしません）。
+- 既存の YAML をテンプレートで上書きしたい場合は `--force` を併用します。
+
+```
+kde-browser-picker --init-defaults --force
+```
+
 ### 設定可能な項目
 - 自動選択タイムアウト（0-60秒）
 - 最後に使用したプロファイルの記憶

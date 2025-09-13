@@ -39,8 +39,14 @@ QMap<QString, BrowserDetector::BrowserInfo> BrowserDetector::detectBrowsers()
 
     QMap<QString, BrowserInfo> browsers;
 
-    // Firefoxを検出
-    QString firefoxExec = findExecutable(Constants::FIREFOX_EXECUTABLE);
+    // Firefoxを検出（YAML上書き優先）
+    if (m_enabledOverrides.contains("firefox") && !m_enabledOverrides.value("firefox")) {
+        // 明示的に無効化
+    } else {
+    QString firefoxExec = m_execOverrides.value("firefox");
+    if (firefoxExec.isEmpty()) {
+        firefoxExec = findExecutable(Constants::FIREFOX_EXECUTABLE);
+    }
     if (!firefoxExec.isEmpty()) {
         BrowserInfo firefox("Firefox", firefoxExec, Constants::BrowserType::Firefox);
         firefox.iconPath = "/usr/share/icons/hicolor/48x48/apps/firefox.png";
@@ -48,25 +54,40 @@ QMap<QString, BrowserDetector::BrowserInfo> BrowserDetector::detectBrowsers()
         browsers["firefox"] = firefox;
         emit browserDetected("firefox");
     }
-
-    // Google Chromeを検出
-    QString chromeExec = findExecutableFromList(Constants::CHROME_EXECUTABLE_VARIANTS);
-    if (!chromeExec.isEmpty()) {
-        BrowserInfo chrome("Google Chrome", chromeExec, Constants::BrowserType::Chrome);
-        chrome.iconPath = "/usr/share/icons/hicolor/48x48/apps/google-chrome.png";
-        chrome.profiles = getChromeProfiles("google-chrome");
-        browsers["chrome"] = chrome;
-        emit browserDetected("chrome");
     }
 
-    // Chromiumを検出
-    QString chromiumExec = findExecutable(Constants::CHROMIUM_EXECUTABLE);
-    if (!chromiumExec.isEmpty()) {
-        BrowserInfo chromium("Chromium", chromiumExec, Constants::BrowserType::Chromium);
-        chromium.iconPath = "/usr/share/icons/hicolor/48x48/apps/chromium.png";
-        chromium.profiles = getChromeProfiles("chromium");
-        browsers["chromium"] = chromium;
-        emit browserDetected("chromium");
+    // Google Chromeを検出（YAML上書き優先）
+    if (m_enabledOverrides.contains("chrome") && !m_enabledOverrides.value("chrome")) {
+        // 無効化
+    } else {
+        QString chromeExec = m_execOverrides.value("chrome");
+        if (chromeExec.isEmpty()) {
+            chromeExec = findExecutableFromList(Constants::CHROME_EXECUTABLE_VARIANTS);
+        }
+        if (!chromeExec.isEmpty()) {
+            BrowserInfo chrome("Google Chrome", chromeExec, Constants::BrowserType::Chrome);
+            chrome.iconPath = "/usr/share/icons/hicolor/48x48/apps/google-chrome.png";
+            chrome.profiles = getChromeProfiles("google-chrome");
+            browsers["chrome"] = chrome;
+            emit browserDetected("chrome");
+        }
+    }
+
+    // Chromiumを検出（YAML上書き優先）
+    if (m_enabledOverrides.contains("chromium") && !m_enabledOverrides.value("chromium")) {
+        // 無効化
+    } else {
+        QString chromiumExec = m_execOverrides.value("chromium");
+        if (chromiumExec.isEmpty()) {
+            chromiumExec = findExecutable(Constants::CHROMIUM_EXECUTABLE);
+        }
+        if (!chromiumExec.isEmpty()) {
+            BrowserInfo chromium("Chromium", chromiumExec, Constants::BrowserType::Chromium);
+            chromium.iconPath = "/usr/share/icons/hicolor/48x48/apps/chromium.png";
+            chromium.profiles = getChromeProfiles("chromium");
+            browsers["chromium"] = chromium;
+            emit browserDetected("chromium");
+        }
     }
 
     m_cachedBrowsers = browsers;
@@ -77,11 +98,23 @@ QMap<QString, BrowserDetector::BrowserInfo> BrowserDetector::detectBrowsers()
 
 bool BrowserDetector::isBrowserInstalled(const QString& browserName) const
 {
+    auto existsAndExec = [](const QString& p) {
+        if (p.isEmpty()) return false;
+        QFileInfo fi(p);
+        return fi.exists() && fi.isFile() && fi.isExecutable();
+    };
+
     if (browserName == "firefox") {
+        if (m_enabledOverrides.contains("firefox") && !m_enabledOverrides.value("firefox")) return false;
+        if (existsAndExec(m_execOverrides.value("firefox"))) return true;
         return !findExecutable(Constants::FIREFOX_EXECUTABLE).isEmpty();
     } else if (browserName == "chrome") {
+        if (m_enabledOverrides.contains("chrome") && !m_enabledOverrides.value("chrome")) return false;
+        if (existsAndExec(m_execOverrides.value("chrome"))) return true;
         return !findExecutable(Constants::CHROME_EXECUTABLE).isEmpty();
     } else if (browserName == "chromium") {
+        if (m_enabledOverrides.contains("chromium") && !m_enabledOverrides.value("chromium")) return false;
+        if (existsAndExec(m_execOverrides.value("chromium"))) return true;
         return !findExecutable(Constants::CHROMIUM_EXECUTABLE).isEmpty();
     }
     return false;

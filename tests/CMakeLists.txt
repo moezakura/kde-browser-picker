@@ -1,34 +1,43 @@
 find_package(GTest REQUIRED)
 
 # Test executables
-add_executable(test_browserdetector test_browserdetector.cpp ../src/browserdetector.cpp)
-target_link_libraries(test_browserdetector 
-    Qt5::Core 
-    Qt5::Widgets 
-    GTest::GTest 
-    GTest::Main
-)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test_browserdetector.cpp)
+  add_executable(test_browserdetector test_browserdetector.cpp ../src/browserdetector.cpp)
+  target_link_libraries(test_browserdetector 
+      Qt5::Core 
+      Qt5::Widgets 
+      GTest::GTest 
+      GTest::Main
+  )
+  add_test(NAME BrowserDetectorTest COMMAND test_browserdetector)
+endif()
 
-add_executable(test_configmanager test_configmanager.cpp ../src/configmanager.cpp)
-target_link_libraries(test_configmanager 
-    Qt5::Core 
-    KF5::ConfigCore
-    GTest::GTest 
-    GTest::Main
-)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test_configmanager.cpp)
+  add_executable(test_configmanager test_configmanager.cpp ../src/configmanager.cpp)
+  target_link_libraries(test_configmanager 
+      Qt5::Core 
+      KF5::ConfigCore
+      GTest::GTest 
+      GTest::Main
+  )
+  add_test(NAME ConfigManagerTest COMMAND test_configmanager)
+endif()
 
-add_executable(test_profilemanager test_profilemanager.cpp 
-    ../src/profilemanager.cpp
-    ../src/browserdetector.cpp
-    ../src/configmanager.cpp
-)
-target_link_libraries(test_profilemanager 
-    Qt5::Core 
-    Qt5::Widgets
-    KF5::ConfigCore
-    GTest::GTest 
-    GTest::Main
-)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test_profilemanager.cpp)
+  add_executable(test_profilemanager test_profilemanager.cpp 
+      ../src/profilemanager.cpp
+      ../src/browserdetector.cpp
+      ../src/configmanager.cpp
+  )
+  target_link_libraries(test_profilemanager 
+      Qt5::Core 
+      Qt5::Widgets
+      KF5::ConfigCore
+      GTest::GTest 
+      GTest::Main
+  )
+  add_test(NAME ProfileManagerTest COMMAND test_profilemanager)
+endif()
 
 # Security test executable
 add_executable(test_browserdetector_security test_browserdetector_security.cpp ../src/browserdetector.cpp)
@@ -40,7 +49,19 @@ target_link_libraries(test_browserdetector_security
 )
 
 # Add tests
-add_test(NAME BrowserDetectorTest COMMAND test_browserdetector)
-add_test(NAME ConfigManagerTest COMMAND test_configmanager)
-add_test(NAME ProfileManagerTest COMMAND test_profilemanager)
 add_test(NAME BrowserDetectorSecurityTest COMMAND test_browserdetector_security)
+
+# YAML override test
+add_executable(test_yaml_overrides 
+    test_yaml_overrides.cpp
+    ../src/configmanager.cpp
+    ../src/browserdetector.cpp
+)
+target_link_libraries(test_yaml_overrides 
+    Qt5::Core 
+    Qt5::Widgets
+    KF5::ConfigCore
+    GTest::GTest 
+    GTest::Main
+)
+add_test(NAME YamlOverridesTest COMMAND test_yaml_overrides)

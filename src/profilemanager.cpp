@@ -18,6 +18,10 @@ ProfileManager::ProfileManager(ConfigManager* configManager, QObject* parent)
     , m_browserDetector(std::make_unique<BrowserDetector>(this))
     , m_configManager(configManager)
 {
+    // YAMLによる実行パス上書きを反映
+    m_browserDetector->setExecutableOverrides(m_configManager->browserExecutableOverrides());
+    m_browserDetector->setEnabledOverrides(m_configManager->browserEnabledOverrides());
+
     // ブラウザ検出シグナルの接続
     connect(m_browserDetector.get(), &BrowserDetector::browserDetected,
             this, &ProfileManager::onBrowserDetected);

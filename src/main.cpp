@@ -16,6 +16,7 @@
 
 #include "mainwindow.h"
 #include "kdeintegration.h"
+#include "configmanager.h"
 #include "version.h"
 
 int main(int argc, char *argv[])
@@ -59,10 +60,17 @@ int main(int argc, char *argv[])
     QCommandLineOption registerOption("register-default",
                                     i18n("Register as default browser"));
     parser.addOption(registerOption);
-    
+
     QCommandLineOption settingsOption("settings",
                                     i18n("Show settings dialog"));
     parser.addOption(settingsOption);
+
+    QCommandLineOption deployDefaultsOption("init-defaults",
+                                           i18n("Deploy default config files to ~/.config"));
+    parser.addOption(deployDefaultsOption);
+    QCommandLineOption forceOption("force",
+                                   i18n("Force overwrite when used with --init-defaults"));
+    parser.addOption(forceOption);
     
     // コマンドラインを処理
     parser.process(app);
@@ -76,6 +84,17 @@ int main(int argc, char *argv[])
             qCritical() << "Failed to register as default browser";
             return 1;
         }
+    }
+
+    if (parser.isSet(deployDefaultsOption)) {
+        ConfigManager cfg;
+        bool changed = cfg.deployDefaults(parser.isSet(forceOption));
+        if (changed) {
+            qInfo() << "Default config deployed";
+        } else {
+            qInfo() << "Nothing to do (defaults already present)";
+        }
+        return 0;
     }
     
     // コマンドラインからURLを取得
