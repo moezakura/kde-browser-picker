@@ -2,3 +2,4 @@ build/
 build-appimage/
 *.AppImage
 
+build-qt6/
