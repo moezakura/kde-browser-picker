@@ -315,6 +315,17 @@ QMap<QString, BrowserDetector::ProfileInfo> BrowserDetector::getFirefoxProfiles(
     QString profilesPath = getFirefoxProfilePath();
     QString iniPath = profilesPath + "/" + Constants::FIREFOX_CONFIG;
     
+    // snap版Firefoxのフォールバック（profiles.iniの存在で判定。~/.mozillaのみ存在して
+    // 空の環境があるためディレクトリ存在判定は使わない）
+    if (!QFile::exists(iniPath)) {
+        const QString snapProfilesPath = QDir::homePath() + "/snap/firefox/common/.mozilla/firefox";
+        const QString snapIniPath = snapProfilesPath + "/" + Constants::FIREFOX_CONFIG;
+        if (QFile::exists(snapIniPath)) {
+            profilesPath = snapProfilesPath;
+            iniPath = snapIniPath;
+        }
+    }
+    
     if (!QFile::exists(iniPath)) {
         qDebug() << "Firefox profiles.ini not found at" << iniPath;
         return profiles;
@@ -366,6 +377,16 @@ QMap<QString, BrowserDetector::ProfileInfo> BrowserDetector::getChromeProfiles(c
     
     QString configPath = getChromeProfilePath(browserName);
     QString localStatePath = configPath + "/" + Constants::CHROME_CONFIG;
+    
+    // snap版Chromiumのフォールバック（Local Stateの存在で判定）
+    if (browserName == "chromium" && !QFile::exists(localStatePath)) {
+        const QString snapConfigPath = QDir::homePath() + "/snap/chromium/common/chromium";
+        const QString snapLocalStatePath = snapConfigPath + "/" + Constants::CHROME_CONFIG;
+        if (QFile::exists(snapLocalStatePath)) {
+            configPath = snapConfigPath;
+            localStatePath = snapLocalStatePath;
+        }
+    }
     
     if (!QFile::exists(localStatePath)) {
         qDebug() << browserName << "Local State not found at" << localStatePath;
