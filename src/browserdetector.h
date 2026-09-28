@@ -29,6 +29,8 @@
  * - Mozilla Firefox
  * - Google Chrome
  * - Chromium
+ * - Vivaldi
+ * - Zen Browser (flatpak)
  *
  * @note セキュリティ上の理由から、URLとプロファイル名は検証・サニタイズされます
  */
@@ -90,7 +92,7 @@ public:
     
     /**
      * @brief 指定されたブラウザがインストールされているかチェック
-     * @param browserName ブラウザ名（"firefox", "chrome", "chromium"）
+     * @param browserName ブラウザ名（"firefox", "chrome", "chromium", "vivaldi", "zen"）
      * @return true: インストールされている, false: インストールされていない
      */
     bool isBrowserInstalled(const QString& browserName) const;
@@ -181,8 +183,16 @@ private:
     QMap<QString, ProfileInfo> getFirefoxProfiles();
     
     /**
+     * @brief Zen Browser (flatpak) のプロファイル一覧を取得
+     * ~/.var/app/io.github.zen_browser.zen/.mozilla/firefox/profiles.ini が
+     * 存在する場合のみプロファイルを返す
+     * @return プロファイルIDからProfileInfoへのマップ
+     */
+    QMap<QString, ProfileInfo> getZenProfiles();
+    
+    /**
      * @brief Chrome/Chromiumのプロファイル一覧を取得
-     * @param browserName ブラウザ名（"google-chrome" または "chromium"）
+     * @param browserName ブラウザ名（"google-chrome", "chromium", "vivaldi"）
      * @return プロファイルIDからProfileInfoへのマップ
      */
     QMap<QString, ProfileInfo> getChromeProfiles(const QString& browserName);

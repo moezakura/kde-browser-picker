@@ -244,6 +244,8 @@ void ConfigManager::migrateOldConfig()
 //   firefox: /opt/firefox/firefox
 //   chrome: /usr/bin/google-chrome-stable
 //   chromium: /usr/local/bin/chromium
+//   vivaldi: /usr/bin/vivaldi
+//   zen: /usr/bin/flatpak
 // もしくはネスト形式:
 //   firefox:
 //     path: /opt/firefox/firefox
@@ -342,7 +344,8 @@ void ConfigManager::loadYamlOverrides()
             QString key = line.mid(indent, cpos - indent).trimmed();
             QString rest = line.mid(cpos + 1).trimmed();
 
-            if (key == "firefox" || key == "chrome" || key == "chromium") {
+            if (key == "firefox" || key == "chrome" || key == "chromium" || key == "vivaldi"
+                || key == "zen") {
                 if (!rest.isEmpty()) {
                     QString path = cleanValue(rest);
                     if (isExecutableFile(path)) {

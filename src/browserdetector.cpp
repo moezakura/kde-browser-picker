@@ -90,6 +90,49 @@ QMap<QString, BrowserDetector::BrowserInfo> BrowserDetector::detectBrowsers()
         }
     }
 
+    // Vivaldiを検出（YAML上書き優先）
+    if (m_enabledOverrides.contains("vivaldi") && !m_enabledOverrides.value("vivaldi")) {
+        // 無効化
+    } else {
+        QString vivaldiExec = m_execOverrides.value("vivaldi");
+        if (vivaldiExec.isEmpty()) {
+            vivaldiExec = findExecutable(Constants::VIVALDI_EXECUTABLE);
+        }
+        if (!vivaldiExec.isEmpty()) {
+            BrowserInfo vivaldi("Vivaldi", vivaldiExec, Constants::BrowserType::Vivaldi);
+            vivaldi.iconPath = "/usr/share/icons/hicolor/48x48/apps/vivaldi.png";
+            vivaldi.profiles = getChromeProfiles("vivaldi");
+            browsers["vivaldi"] = vivaldi;
+            emit browserDetected("vivaldi");
+        }
+    }
+
+    // Zen Browser (flatpak)を検出（YAML上書き優先、profiles.ini存在時のみ）
+    if (m_enabledOverrides.contains("zen") && !m_enabledOverrides.value("zen")) {
+        // 無効化
+    } else {
+        const QString zenProfilesPath = QDir::homePath() + "/.var/app/" + Constants::ZEN_FLATPAK_ID + "/.zen";
+        if (QFile::exists(zenProfilesPath + "/" + Constants::FIREFOX_CONFIG)) {
+            QString zenExec = m_execOverrides.value("zen");
+            if (zenExec.isEmpty()) {
+                zenExec = findExecutable(Constants::ZEN_EXECUTABLE);
+            }
+            if (!zenExec.isEmpty()) {
+                BrowserInfo zen("Zen Browser", zenExec, Constants::BrowserType::Zen);
+                // flatpakのエクスポート先から実在するアイコンパスを使用（scalable SVGを優先）
+                zen.iconPath = QString("/var/lib/flatpak/exports/share/icons/hicolor/scalable/apps/")
+                               + Constants::ZEN_FLATPAK_ID + ".svg";
+                if (!QFile::exists(zen.iconPath)) {
+                    zen.iconPath = QDir::homePath() + "/.local/share/flatpak/exports/share/icons/hicolor/scalable/apps/"
+                                   + Constants::ZEN_FLATPAK_ID + ".svg";
+                }
+                zen.profiles = getZenProfiles();
+                browsers["zen"] = zen;
+                emit browserDetected("zen");
+            }
+        }
+    }
+
     m_cachedBrowsers = browsers;
     m_lastDetection = QDateTime::currentDateTime();
     
@@ -116,6 +159,17 @@ bool BrowserDetector::isBrowserInstalled(const QString& browserName) const
         if (m_enabledOverrides.contains("chromium") && !m_enabledOverrides.value("chromium")) return false;
         if (existsAndExec(m_execOverrides.value("chromium"))) return true;
         return !findExecutable(Constants::CHROMIUM_EXECUTABLE).isEmpty();
+    } else if (browserName == "vivaldi") {
+        if (m_enabledOverrides.contains("vivaldi") && !m_enabledOverrides.value("vivaldi")) return false;
+        if (existsAndExec(m_execOverrides.value("vivaldi"))) return true;
+        return !findExecutable(Constants::VIVALDI_EXECUTABLE).isEmpty();
+    } else if (browserName == "zen") {
+        if (m_enabledOverrides.contains("zen") && !m_enabledOverrides.value("zen")) return false;
+        const QString zenIniPath = QDir::homePath() + "/.var/app/" + Constants::ZEN_FLATPAK_ID
+                                   + "/.zen/" + Constants::FIREFOX_CONFIG;
+        if (!QFile::exists(zenIniPath)) return false;
+        if (existsAndExec(m_execOverrides.value("zen"))) return true;
+        return !findExecutable(Constants::ZEN_EXECUTABLE).isEmpty();
     }
     return false;
 }
@@ -233,8 +287,25 @@ bool BrowserDetector::launchBrowser(const QString& browser, const QString& profi
         args << "-P" << sanitizedProfile << sanitizedUrl;
         break;
         
+    case Constants::BrowserType::Zen: {
+        // flatpak経由の場合はApp IDを指定して起動、それ以外は直接起動
+        const bool isFlatpak = browserInfo.executable == Constants::ZEN_EXECUTABLE
+                               || browserInfo.executable.endsWith("/" + QString(Constants::ZEN_EXECUTABLE));
+        if (isFlatpak) {
+            // launch-script.sh経由で起動
+            args << "run" << "--command=launch-script.sh" << Constants::ZEN_FLATPAK_ID;
+        }
+        args << "-P" << sanitizedProfile;
+        // flatpak run に --file-forwarding を指定していないため @@u トークンは
+        // 解釈されず文字列のまま渡る。通常引数として渡す（http/https URLは
+        // サンドボックス内から直接アクセス可能、finish-args --share=network 済み）。
+        args << sanitizedUrl;
+        break;
+    }
+        
     case Constants::BrowserType::Chrome:
     case Constants::BrowserType::Chromium:
+    case Constants::BrowserType::Vivaldi:
         args << QString("--profile-directory=%1").arg(sanitizedProfile) << sanitizedUrl;
         break;
         
@@ -338,6 +409,30 @@ QMap<QString, BrowserDetector::ProfileInfo> BrowserDetector::getFirefoxProfiles(
         QString profileFullPath = profilesPath + "/" + profile.path;
         profile.lastUsed = getProfileLastUsed("firefox", profileFullPath);
         emit profileDetected("firefox", profile.name);
+    }
+    
+    return profiles;
+}
+
+QMap<QString, BrowserDetector::ProfileInfo> BrowserDetector::getZenProfiles()
+{
+    QMap<QString, ProfileInfo> profiles;
+    
+    const QString profilesPath = QDir::homePath() + "/.var/app/" + Constants::ZEN_FLATPAK_ID + "/.zen";
+    const QString iniPath = profilesPath + "/" + Constants::FIREFOX_CONFIG;
+    
+    if (!QFile::exists(iniPath)) {
+        qDebug() << "Zen profiles.ini not found at" << iniPath;
+        return profiles;
+    }
+    
+    parseFirefoxIni(iniPath, profiles);
+    
+    // 各プロファイルの最終使用日時を取得（Firefoxと同じtimes.json扱い）
+    for (auto& profile : profiles) {
+        QString profileFullPath = profilesPath + "/" + profile.path;
+        profile.lastUsed = getProfileLastUsed("zen", profileFullPath);
+        emit profileDetected("zen", profile.name);
     }
     
     return profiles;
@@ -456,8 +551,8 @@ void BrowserDetector::parseChromiumLocalState(const QString& localStatePath,
 
 QDateTime BrowserDetector::getProfileLastUsed(const QString& browserPath, const QString& profilePath)
 {
-    // For Firefox, check times.json
-    if (browserPath == "firefox") {
+    // For Firefox/Zen, check times.json
+    if (browserPath == "firefox" || browserPath == "zen") {
         QString timesPath = profilePath + "/times.json";
         if (QFile::exists(timesPath)) {
             QFile file(timesPath);
@@ -476,8 +571,8 @@ QDateTime BrowserDetector::getProfileLastUsed(const QString& browserPath, const 
         }
     }
     
-    // For Chrome/Chromium, check Preferences file
-    else if (browserPath == "chrome" || browserPath == "chromium") {
+    // For Chrome/Chromium/Vivaldi, check Preferences file
+    else if (browserPath == "chrome" || browserPath == "chromium" || browserPath == "vivaldi") {
         QString prefsPath = profilePath + "/Preferences";
         if (QFile::exists(prefsPath)) {
             // Just use file modification time for now

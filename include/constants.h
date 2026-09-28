@@ -56,6 +56,15 @@ namespace Constants {
     constexpr auto FIREFOX_EXECUTABLE = "firefox";
     constexpr auto CHROME_EXECUTABLE = "google-chrome";
     constexpr auto CHROMIUM_EXECUTABLE = "chromium";
+    constexpr auto VIVALDI_EXECUTABLE = "vivaldi";
+    
+    /**
+     * @brief Zen Browser (flatpak) 設定
+     * flatpak CLI経由で起動するためのApp IDと実行ファイル
+     */
+    // Zen Browser (flatpak)
+    constexpr auto ZEN_EXECUTABLE = "flatpak";
+    constexpr auto ZEN_FLATPAK_ID = "io.github.zen_browser.zen";
     
     /**
      * @brief Chrome実行ファイルのバリエーション
@@ -92,6 +101,8 @@ namespace Constants {
         Firefox,
         Chrome,
         Chromium,
+        Vivaldi,
+        Zen,
         Unknown
     };
     

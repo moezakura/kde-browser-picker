@@ -182,7 +182,7 @@ public:
 
     /**
      * @brief 特定ブラウザの実行パス上書きを取得
-     * @param browser ブラウザID ("firefox", "chrome", "chromium")
+     * @param browser ブラウザID ("firefox", "chrome", "chromium", "vivaldi", "zen")
      * @return 上書きパス（なければ空）
      */
     QString browserExecutableOverride(const QString& browser) const;
