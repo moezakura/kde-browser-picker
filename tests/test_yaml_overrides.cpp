@@ -10,6 +10,10 @@
 #include <QTextStream>
 #include <QFileInfo>
 #include <QProcessEnvironment>
+#include <QtGlobal>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QStringConverter>
+#endif
 
 #include "../src/configmanager.h"
 #include "../src/browserdetector.h"
@@ -42,7 +46,11 @@ TEST(YamlOverrides, LoadAndApply)
     ASSERT_TRUE(yaml.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate));
     {
         QTextStream out(&yaml);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         out.setCodec("UTF-8");
+#else
+        out.setEncoding(QStringConverter::Utf8);
+#endif
         out << "browsers:\n";
         out << "  firefox:\n";
         out << "    path: " << fakeFirefox << "\n";
@@ -73,7 +81,11 @@ TEST(YamlOverrides, LoadAndApply)
     ASSERT_TRUE(yaml.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate));
     {
         QTextStream out(&yaml);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         out.setCodec("UTF-8");
+#else
+        out.setEncoding(QStringConverter::Utf8);
+#endif
         out << "browsers:\n";
         out << "  firefox:\n";
         out << "    path: " << fakeFirefox << "\n";

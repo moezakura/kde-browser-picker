@@ -17,6 +17,9 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QSaveFile>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QStringConverter>
+#endif
 
 ConfigManager::ConfigManager(QObject* parent)
     : QObject(parent)
@@ -273,7 +276,11 @@ void ConfigManager::loadYamlOverrides()
     }
 
     QTextStream in(&f);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     in.setCodec("UTF-8");
+#else
+    in.setEncoding(QStringConverter::Utf8);
+#endif
 
     auto isExecutableFile = [](const QString& p) -> bool {
         QFileInfo info(p);
@@ -401,18 +408,24 @@ bool ConfigManager::deployDefaults(bool overwriteYaml)
         QSaveFile f(yamlPath);
         if (f.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream out(&f);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             out.setCodec("UTF-8");
+#else
+            out.setEncoding(QStringConverter::Utf8);
+#endif
             out.setGenerateByteOrderMark(false);
             // ASCII-only template to avoid mojibake
             out << "# KDE Browser Picker YAML configuration\n";
             out << "# Override executable paths only if needed.\n";
-            out << "# Supported keys under 'browsers': firefox, chrome, chromium\n";
+            out << "# Supported keys under 'browsers': firefox, chrome, chromium, vivaldi, zen\n";
             out << "#\n";
             out << "# Example (inline):\n";
             out << "# browsers:\n";
             out << "#   firefox: /opt/firefox/firefox\n";
             out << "#   chrome: /usr/bin/google-chrome-stable\n";
             out << "#   chromium: /usr/local/bin/chromium\n";
+            out << "#   vivaldi: /usr/bin/vivaldi\n";
+            out << "#   zen: /usr/bin/flatpak\n";
             out << "#\n";
             out << "# Example (nested):\n";
             out << "# browsers:\n";

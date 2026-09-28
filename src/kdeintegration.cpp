@@ -78,9 +78,17 @@ void KDEIntegration::showNotification(const QString& title,
         notification->setIconName("web-browser");
     }
     
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // KF5ではKNotification::activatedにパラメータがある
     connect(notification, QOverload<unsigned int>::of(&KNotification::activated),
             this, [this](unsigned int) { onNotificationActivated(); });
+#else
+    // KF6ではKNotification::activated(unsigned int)は廃止。
+    // アクション経由で通知のアクティベートを扱う
+    KNotificationAction* action = notification->addAction(i18n("Activate"));
+    connect(action, &KNotificationAction::activated,
+            this, &KDEIntegration::onNotificationActivated);
+#endif
             
     connect(notification, &KNotification::closed, notification, [this, notification]() {
         m_activeNotifications.removeOne(notification);

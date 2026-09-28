@@ -131,7 +131,11 @@ void ProfileItem::paintEvent(QPaintEvent* event)
     painter.drawRoundedRect(rect, radius, radius);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void ProfileItem::enterEvent(QEvent* event)
+#else
+void ProfileItem::enterEvent(QEnterEvent* event)
+#endif
 {
     Q_UNUSED(event)
     m_hovered = true;

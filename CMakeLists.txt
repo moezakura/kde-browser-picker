@@ -36,12 +36,12 @@ set(KF_PACKAGE "")
 # Prefer Qt5/KF5 on this machine; try Qt6/KF6 only if Qt5 is unavailable
 find_package(Qt5 COMPONENTS Core Widgets Gui QUIET)
 if (Qt5_FOUND)
-    find_package(KF5 REQUIRED COMPONENTS Config ConfigWidgets Notifications I18n)
+    find_package(KF5 REQUIRED COMPONENTS Config ConfigWidgets Notifications I18n CoreAddons)
     set(QT_PACKAGE Qt5)
     set(KF_PACKAGE KF5)
 else()
     find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
-    find_package(KF6 REQUIRED COMPONENTS Config ConfigWidgets Notifications I18n)
+    find_package(KF6 REQUIRED COMPONENTS Config ConfigWidgets Notifications I18n CoreAddons)
     set(QT_PACKAGE Qt6)
     set(KF_PACKAGE KF6)
 endif()
@@ -115,6 +115,7 @@ target_link_libraries(kde-browser-picker
     ${QT_PACKAGE}::Core
     ${QT_PACKAGE}::Widgets
     ${QT_PACKAGE}::Gui
+    ${KF_PACKAGE}::CoreAddons
     ${KF_PACKAGE}::ConfigCore
     ${KF_PACKAGE}::ConfigWidgets
     ${KF_PACKAGE}::Notifications
