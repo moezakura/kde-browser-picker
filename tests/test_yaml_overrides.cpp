@@ -37,6 +37,11 @@ TEST(YamlOverrides, LoadAndApply)
     QTemporaryDir tmpdir;
     ASSERT_TRUE(tmpdir.isValid());
 
+    // XDG_CONFIG_HOMEを隔離し、ユーザーの実設定(kde-browser-pickerrc)を触らないようにする
+    QTemporaryDir configDir;
+    ASSERT_TRUE(configDir.isValid());
+    qputenv("XDG_CONFIG_HOME", configDir.path().toUtf8());
+
     // ダミー実行ファイル
     QString fakeFirefox = createExecutableDummy(tmpdir.path(), "fake_firefox");
 
