@@ -237,6 +237,14 @@ void MainWindow::onProfilesRefreshed()
     }
     m_profileItems.clear();
     m_selectedItem = nullptr;
+
+    // 前回追加した stretch (QSpacerItem) が累積しないよう除去する
+    for (int i = m_ui->profilesLayout->count() - 1; i >= 0; --i) {
+        QLayoutItem* layoutItem = m_ui->profilesLayout->itemAt(i);
+        if (layoutItem && layoutItem->spacerItem()) {
+            delete m_ui->profilesLayout->takeAt(i);
+        }
+    }
     
     // Get enabled profiles
     auto profiles = m_profileManager->getAllProfiles(true);
