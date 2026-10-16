@@ -209,6 +209,30 @@ void ProfileManager::setProfileOrder(const QString& browser, const QString& prof
     }
 }
 
+void ProfileManager::applyProfileSettings(const QList<ProfileSetting>& settings)
+{
+    // m_profilesは各setterで再ソートされるため、引数リストを走査し、
+    // 差分判定は値コピーで行う
+    for (const ProfileSetting& s : settings) {
+        auto it = std::find_if(m_profiles.cbegin(), m_profiles.cend(),
+                               [&](const ProfileEntry& entry) {
+                                   return entry.browser == s.browser && entry.profileId == s.profileId;
+                               });
+        if (it == m_profiles.cend()) {
+            continue;  // 未検出は無視
+        }
+        const int currentOrder = it->order;
+        const bool currentEnabled = it->isEnabled;
+
+        if (currentOrder != s.order) {
+            setProfileOrder(s.browser, s.profileId, s.order);
+        }
+        if (currentEnabled != s.enabled) {
+            setProfileEnabled(s.browser, s.profileId, s.enabled);
+        }
+    }
+}
+
 void ProfileManager::moveProfileUp(const QString& browser, const QString& profileId)
 {
     // Find the profile and the one before it

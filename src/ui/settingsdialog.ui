@@ -138,6 +138,50 @@
       <attribute name="title">
        <string>プロファイル</string>
       </attribute>
+      <layout class="QVBoxLayout" name="profilesLayout">
+       <item>
+        <widget class="QLabel" name="profilesHelpLabel">
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>ドラッグで並べ替え、チェックで表示/非表示を切り替えます。数字ショートカットは表示中の並び順に連動するため、並べ替えや非表示で番号が変わります</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: palette(mid);</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="profileListWidget"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="profilesEmptyLabel">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>プロファイルが検出されませんでした</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: palette(mid);</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="profilesWarningLabel">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>少なくとも 1 件は表示が必要です</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">font-weight: bold;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

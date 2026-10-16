@@ -11,6 +11,7 @@
 #include "profilemanager.h"
 #include "configmanager.h"
 #include "ui/profileitem.h"
+#include "ui/settingsdialog.h"
 #include "constants.h"
 
 #include <QKeyEvent>
@@ -191,8 +192,15 @@ void MainWindow::onProfileSettingsClicked()
 
 void MainWindow::onSettingsClicked()
 {
-    // TODO: Show main settings dialog
-    qDebug() << "Show settings dialog";
+    // 設定ダイアログ表示中は自動選択タイマーを止め、再開しない
+    m_timeoutTimer->stop();
+    m_tickTimer->stop();
+    m_ui->timeoutLabel->hide();
+
+    SettingsDialog dialog(m_configManager.get(), m_profileManager.get(), this);
+    if (dialog.exec() == QDialog::Accepted) {
+        m_profileManager->refreshProfiles();
+    }
 }
 
 void MainWindow::onOpenClicked()

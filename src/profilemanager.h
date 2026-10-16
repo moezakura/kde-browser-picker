@@ -21,6 +21,20 @@
 class ConfigManager;
 
 /**
+ * @struct ProfileSetting
+ * @brief プロファイル設定の一括反映用データ
+ *
+ * ProfileManager::applyProfileSettings に渡す、1プロファイル分の
+ * 並び順と有効/無効の指定です。
+ */
+struct ProfileSetting {
+    QString browser;     ///< ブラウザID（ProfileEntry::browser と一致）
+    QString profileId;   ///< プロファイルID（ProfileEntry::profileId と一致）
+    int order;           ///< 表示順序（0..N-1）
+    bool enabled;        ///< 有効/無効状態
+};
+
+/**
  * @class ProfileManager
  * @brief ブラウザプロファイル管理クラス
  *
@@ -171,6 +185,14 @@ public:
      */
     void setProfileOrder(const QString& browser, const QString& profileId, int order);
     
+    /**
+     * @brief 複数プロファイルの並び順と有効/無効を一括反映
+     * @param settings 反映する設定のリスト
+     * @note キャッシュと異なる項目のみ既存のsetterを呼ぶ。未検出の項目は無視する。
+     *       profilesRefreshedは発行しない。
+     */
+    void applyProfileSettings(const QList<ProfileSetting>& settings);
+
     // プロファイルの並び替え
     /**
      * @brief プロファイルを一つ上に移動
